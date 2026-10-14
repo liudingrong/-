@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拍卖年鉴 · 藏品撷珍</title>
+    <style>
+        /* 全局风格 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Noto Sans', system-ui, sans-serif;
+        }
+
+        body {
+            background: #e9e5dc;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .yearbook-container {
+            max-width: 1280px;
+            width: 100%;
+            background: #fcf9f4;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            padding: 2.2rem 1.8rem 2.8rem;
+            border: 1px solid #d9d2c5;
+        }
+
+        /* 顶部用户栏 */
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding: 0.6rem 1.2rem;
+            background: #f3efe8;
+            border-radius: 40px;
+            border: 1px solid #dad1c2;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: #5c4f3f;
+            flex-wrap: wrap;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #8b7a64;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .user-role-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .role-admin { background: #6b4f2b; color: #f5ecd8; }
+        .role-user { background: #d4c9bb; color: #4f453a; }
+
+        .user-bar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .btn-small {
+            background: white;
+            border: 1px solid #cdc1b0;
+            color: #5c4f3f;
+            font-size: 0.78rem;
+            padding: 0.4rem 1rem;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 500;
+            font-family: inherit;
+        }
+
+        .btn-small:hover { background: #e7dfd4; border-color: #b9a78b; }
+        .btn-small.primary { background: #6b4f2b; color: white; border-color: #6b4f2b; }
+        .btn-small.primary:hover { background: #55401f; }
+
+        /* 年鉴标题 */
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #b9a78b;
+            padding-bottom: 1.2rem;
+        }
+
+        .header h1 {
+            font-size: 2.6rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: #3e362e;
+            text-transform: uppercase;
+            font-family: 'Times New Roman', 'Songti SC', serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .header .sub {
+            color: #7d6e5c;
+            font-size: 1rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        /* 操作按钮区 */
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .btn-primary {
+            background: #6b4f2b;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.65rem 1.6rem;
+            border-radius: 32px;
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 4px 10px rgba(107, 79, 43, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-primary:hover { background: #55401f; box-shadow: 0 6px 14px rgba(107, 79, 43, 0.3); }
+        .btn-primary:disabled, .btn-primary.disabled {
+            background: #b6aa9b;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #b9a78b;
+            color: #6b5e4e;
+            font-weight: 500;
+            padding: 0.6rem 1.3rem;
+            border-radius: 32px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-outline:hover { background: #f0eae2; border-color: #8b7a64; }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: #f3efe8;
+            border-radius: 48px;
+            border: 1px solid #dad1c2;
+        }
+
+        .search-box {
+            flex: 1 1 260px;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 32px;
+            padding: 0.4rem 0.4rem 0.4rem 1.2rem;
+            border: 1px solid #cdc1b0;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+            transition: 0.15s;
+        }
+
+        .search-box:focus-within {
+            border-color: #a28e74;
+            box-shadow: 0 0 0 3px rgba(162, 142, 116, 0.15);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.95rem;
+            color: #2c2824;
+            padding: 0.3rem 0;
+        }
+
+        .search-box input::placeholder { color: #a89b8b; font-weight: 300; letter-spacing: 0.02em; }
+
+        .search-box button {
+            background: #8b7a64;
+            border: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .search-box button:hover { background: #6f5f4b; }
+
+        .category-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .category-btn {
+            background: white;
+            border: 1px solid #d4c9bb;
+            color: #5c4f3f;
+            font-size: 0.82rem;
+            padding: 0.5rem 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .category-btn:hover { background: #e7dfd4; border-color: #b9a78b; }
+        .category-btn.active {
+            background: #6b4f2b;
+            border-color: #6b4f2b;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(107, 79, 43, 0.2);
+        }
+
+        /* 排列筛选 */
+        .sort-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.2rem;
+            margin-bottom: 1.2rem;
+            padding: 0.8rem 1.5rem;
+            background: #faf7f2;
+            border-radius: 40px;
+            border: 1px solid #e0d8cc;
+        }
+
+        .sort-label { font-size: 0.85rem; font-weight: 600; color: #6b5e4e; letter-spacing: 0.03em; white-space: nowrap; }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #cdc1b0;
+            background: white;
+            font-size: 0.85rem;
+            color: #3e362e;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .sort-select:hover, .sort-select:focus {
+            border-color: #a28e74;
+            box-shadow: 0 0 0 3px rgba(162, 142, 116, 0.1);
+        }
+
+        .sort-toggle { display: flex; border-radius: 30px; overflow: hidden; border: 1px solid #cdc1b0; background: white; }
+
+        .sort-toggle button {
+            border: none;
+            background: transparent;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: #5c4f3f;
+            transition: all 0.15s;
+            font-weight: 500;
+            font-family: inherit;
+        }
+
+        .sort-toggle button.active { background: #6b4f2b; color: white; font-weight: 600; }
+        .sort-toggle button:first-child { border-right: 1px solid #cdc1b0; }
+
+        /* 结果统计 */
+        .result-stats {
+            font-size: 0.82rem;
+            color: #7d6e5c;
+            margin-bottom: 1rem;
+            font-style: italic;
+            letter-spacing: 0.02em;
+            padding-left: 0.3rem;
+        }
+
+        /* 表头引导 */
+        .table-guide {
+            display: flex;
+            flex-wrap: wrap;
+            background: #ddd6cb;
+            border-radius: 30px;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1.2rem;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #4f453a;
+            border: 1px solid #c9bcab;
+        }
+
+        .table-guide span { flex: 1 1 0; text-align: center; white-space: nowrap; }
+
+        /* 拍品卡片 */
+        .lot-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .lot-card {
+            display: grid;
+            grid-template-columns: 0.7fr 0.9fr 1.3fr 0.9fr 1fr 0.9fr 1fr 1.1fr 1fr 0.7fr 0.5fr;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 0.9rem 1.2rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2dbd0;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            color: #2c2824;
+        }
+
+        .lot-card:hover {
+            border-color: #b9a78b;
+            box-shadow: 0 8px 18px rgba(110, 90, 60, 0.08);
+            background: #fffdfa;
+        }
+
+        .lot-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #6b4f2b;
+            letter-spacing: 0.02em;
+            font-family: 'Times New Roman', serif;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-photo { display: flex; justify-content: center; align-items: center; }
+
+        .photo-placeholder {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(145deg, #f0eae2, #d9d0c2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #8a7a66;
+            font-weight: 500;
+            border: 1px solid #cbbfae;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.15s;
+            overflow: hidden;
+        }
+
+        .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 7px; display: block; }
+
+        .lot-dynasty {
+            font-style: italic;
+            color: #6e5b48;
+            font-family: 'Times New Roman', 'Songti SC', serif;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-name {
+            font-weight: 600;
+            color: #2d241c;
+            line-height: 1.3;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-estimate {
+            color: #4f5d5b;
+            font-weight: 500;
+            white-space: nowrap;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-price {
+            font-weight: 700;
+            color: #1f3a2e;
+            background: #e7f0ea;
+            padding: 0.2rem 0.6rem;
+            border-radius: 24px;
+            display: inline-block;
+            font-size: 0.9rem;
+            border: 1px solid #bfcfc2;
+            white-space: nowrap;
+            text-align: center;
+            margin-right: 0.3rem;
+        }
+
+        .lot-size {
+            color: #6b5e51;
+            white-space: nowrap;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-house {
+            font-weight: 500;
+            color: #8b6f4c;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-date {
+            color: #5f5a4f;
+            font-feature-settings: "tnum";
+            font-size: 0.86rem;
+            white-space: nowrap;
+            text-align: right;
+            border-right: 1px dashed #d4c9bb;
+            margin-right: 0.3rem;
+            padding-right: 0.3rem;
+        }
+
+        .lot-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #5e4f3c;
+            background: #ede7de;
+            padding: 0.25rem 0.7rem;
+            border-radius: 30px;
+            text-align: center;
+            border: 1px solid #d4c9bb;
+            white-space: nowrap;
+        }
+
+        .lot-actions { display: flex; justify-content: center; align-items: center; }
+
+        .delete-btn {
+            background: transparent;
+            border: 1px solid #e0cfc0;
+            color: #a0846b;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            line-height: 1;
+            transition: all 0.15s;
+            padding: 0;
+        }
+
+        .delete-btn:hover { background: #f8e8e0; border-color: #c9725e; color: #b14a34; }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3.5rem 1rem;
+            color: #9b8e7d;
+            font-style: italic;
+            background: #faf7f2;
+            border-radius: 16px;
+            border: 1px dashed #d4c9bb;
+            font-size: 1rem;
+        }
+
+        /* 未登录遮罩 */
+        .login-required-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(45, 36, 28, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .login-required-box {
+            background: #fcf9f4;
+            border-radius: 20px;
+            padding: 2.4rem 2.2rem;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid #d9d2c5;
+        }
+
+        .login-required-box h2 {
+            font-family: 'Times New Roman', 'Songti SC', serif;
+            font-weight: 500;
+            font-size: 1.6rem;
+            color: #3e362e;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.04em;
+        }
+
+        .login-required-box p {
+            color: #7d6e5c;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 1.6rem;
+        }
+
+        .login-required-box .btn-primary { width: 100%; justify-content: center; }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(45, 36, 28, 0.55);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: #fcf9f4;
+            border-radius: 16px;
+            max-width: 780px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem 2rem 2.2rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid #d9d2c5;
+            transform: translateY(12px);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal.modal-sm { max-width: 440px; }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.6rem;
+            border-bottom: 2px solid #e2dbd0;
+            padding-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            font-family: 'Times New Roman', 'Songti SC', serif;
+            font-weight: 500;
+            font-size: 1.6rem;
+            color: #3e362e;
+            letter-spacing: 0.04em;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            color: #9b8e7d;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.15s;
+        }
+
+        .modal-close:hover { background: #ede7de; color: #3e362e; }
+
+        .auth-tabs { display: flex; gap: 0; margin-bottom: 1.6rem; border-bottom: 1px solid #e2dbd0; }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: transparent;
+            border: none;
+            font-size: 0.95rem;
+            color: #9b8e7d;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.15s;
+            border-bottom: 3px solid transparent;
+            font-family: inherit;
+            letter-spacing: 0.02em;
+        }
+
+        .auth-tab:hover { color: #5c4f3f; }
+        .auth-tab.active { color: #6b4f2b; border-bottom-color: #6b4f2b; font-weight: 600; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.4rem; }
+        .form-field { display: flex; flex-direction: column; gap: 0.35rem; }
+        .form-field.full-width { grid-column: 1 / -1; }
+
+        .form-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #5c4f3f;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .form-field label .required { color: #b14a34; margin-left: 0.15rem; }
+
+        .form-field input, .form-field select {
+            padding: 0.6rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid #d4c9bb;
+            background: white;
+            font-size: 0.9rem;
+            color: #2c2824;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.15s;
+        }
+
+        .form-field input:focus, .form-field select:focus {
+            border-color: #a28e74;
+            box-shadow: 0 0 0 3px rgba(162, 142, 116, 0.12);
+        }
+
+        .form-field input::placeholder { color: #b6aa9b; font-weight: 300; }
+
+        .upload-area {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            align-items: center;
+            padding: 1rem;
+            border: 2px dashed #d4c9bb;
+            border-radius: 12px;
+            background: #faf7f2;
+            transition: all 0.15s;
+        }
+
+        .upload-area:hover { border-color: #b9a78b; background: #f5f0e8; }
+
+        .upload-preview {
+            width: 90px;
+            height: 90px;
+            border-radius: 10px;
+            background: #ede7de;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #d4c9bb;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            color: #9b8e7d;
+            text-align: center;
+        }
+
+        .upload-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .upload-controls { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 180px; }
+
+        .upload-controls input[type="file"] {
+            font-size: 0.82rem;
+            color: #5c4f3f;
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+
+        .upload-controls input[type="file"]::file-selector-button {
+            background: #8b7a64;
+            border: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-right: 0.8rem;
+            transition: background 0.15s;
+            letter-spacing: 0.03em;
+        }
+
+        .upload-controls input[type="file"]::file-selector-button:hover { background: #6f5f4b; }
+
+        .upload-hint { font-size: 0.72rem; color: #9b8e7d; font-style: italic; }
+
+        .remove-photo-btn {
+            background: transparent;
+            border: 1px solid #e0cfc0;
+            color: #a0846b;
+            padding: 0.35rem 0.9rem;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            align-self: flex-start;
+            font-family: inherit;
+        }
+
+        .remove-photo-btn:hover { background: #f8e8e0; border-color: #c9725e; color: #b14a34; }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 1.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #e2dbd0;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #d4c9bb;
+            color: #5c4f3f;
+            font-weight: 500;
+            padding: 0.65rem 1.5rem;
+            border-radius: 32px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover { background: #f0eae2; border-color: #b9a78b; }
+
+        .btn-submit {
+            background: #6b4f2b;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.65rem 1.8rem;
+            border-radius: 32px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 4px 10px rgba(107, 79, 43, 0.2);
+            font-family: inherit;
+            letter-spacing: 0.03em;
+        }
+
+        .btn-submit:hover { background: #55401f; box-shadow: 0 6px 14px rgba(107, 79, 43, 0.3); }
+
+        .auth-error { color: #b14a34; font-size: 0.8rem; margin-top: 0.6rem; text-align: center; min-height: 1.2rem; }
+
+        .auth-hint {
+            font-size: 0.78rem;
+            color: #9b8e7d;
+            text-align: center;
+            margin-top: 0.8rem;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1300px) {
+            .lot-card { grid-template-columns: 0.7fr 0.8fr 1.2fr 0.9fr 1fr 0.9fr 0.9fr 1fr 0.9fr 0.7fr 0.5fr; font-size: 0.82rem; padding: 0.8rem 0.9rem; }
+            .photo-placeholder { width: 46px; height: 46px; }
+        }
+
+        @media (max-width: 1100px) {
+            .lot-card { grid-template-columns: 0.7fr 0.9fr 1.2fr 0.9fr 1fr 0.9fr 0.9fr 1fr 0.7fr; gap: 0.2rem; }
+            .lot-category { grid-column: span 1; font-size: 0.7rem; }
+            .lot-actions { grid-column: span 1; }
+            .table-guide span { font-size: 0.7rem; white-space: normal; }
+        }
+
+        @media (max-width: 900px) {
+            .lot-card { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.8rem; padding: 1rem 1.2rem; }
+            .lot-number, .lot-dynasty, .lot-name, .lot-estimate, .lot-size, .lot-house, .lot-date { border-right: none; margin-right: 0; padding-right: 0; }
+            .lot-photo { order: -1; margin-right: 0.5rem; }
+            .photo-placeholder { width: 50px; height: 50px; }
+            .lot-name { flex: 1 1 100%; font-size: 1rem; margin-top: 0.2rem; }
+            .lot-price { margin-left: auto; }
+            .lot-category { margin-left: 0.5rem; }
+            .lot-actions { margin-left: 0.3rem; }
+            .table-guide { display: none; }
+        }
+
+        @media (max-width: 700px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .modal { padding: 1.5rem 1.2rem 1.8rem; }
+            .modal-header h2 { font-size: 1.3rem; }
+        }
+
+        @media (max-width: 600px) {
+            .toolbar { flex-direction: column; align-items: stretch; border-radius: 24px; padding: 1rem; }
+            .search-box { flex: 1 1 auto; }
+            .category-filters { justify-content: center; }
+            .sort-bar { flex-direction: column; align-items: stretch; border-radius: 20px; gap: 0.6rem; }
+            .sort-toggle { justify-content: center; }
+            .sort-label { text-align: center; }
+            .action-bar { flex-direction: column; align-items: stretch; }
+            .action-bar button { justify-content: center; }
+            .user-bar { flex-direction: column; align-items: stretch; }
+            .user-bar-actions { justify-content: center; }
+        }
+
+        @media (max-width: 500px) {
+            .yearbook-container { padding: 1.2rem 0.8rem; }
+            .header h1 { font-size: 1.9rem; }
+            .lot-card { font-size: 0.8rem; }
+        }
+
+        .footer-note {
+            margin-top: 2.5rem;
+            text-align: right;
+            font-size: 0.75rem;
+            color: #948b7e;
+            border-top: 1px solid #d9d2c5;
+            padding-top: 1.2rem;
+            font-style: italic;
+            letter-spacing: 0.02em;
+        }
+
+        .hidden { display: none !important; }
+
+        .admin-only-note { font-size: 0.7rem; color: #b6aa9b; font-style: italic; margin-left: 0.5rem; }
+
+        /* 存储警告条 */
+        .storage-warning {
+            background: #fdf3e0;
+            border: 1px solid #e8c99b;
+            color: #8a611c;
+            font-size: 0.78rem;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 未登录遮罩 -->
+    <div id="loginRequiredOverlay" class="login-required-overlay hidden">
+        <div class="login-required-box">
+            <h2>🔒 需要登录</h2>
+            <p>拍卖年鉴的查询与浏览功能仅对注册用户开放。<br>请登录或注册一个账号以继续。</p>
+            <button class="btn-primary" id="goToLoginBtn">前往登录 / 注册</button>
+        </div>
+    </div>
+
+    <div class="yearbook-container">
+        <!-- 存储警告条（如 localStorage 不可用会显示） -->
+        <div id="storageWarning" class="storage-warning hidden">
+            ⚠️ 当前浏览器环境不支持本地持久化存储，您的注册和拍品数据在刷新页面后会丢失。
+        </div>
+
+        <!-- 顶部用户栏 -->
+        <div class="user-bar" id="userBar">
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar">?</div>
+                <span>未登录</span>
+            </div>
+            <div class="user-bar-actions" id="userBarActions">
+                <button class="btn-small primary" id="loginBtn">登录 / 注册</button>
+            </div>
+        </div>
+
+        <!-- 年鉴标题 -->
+        <div class="header">
+            <h1>拍卖年鉴</h1>
+            <div class="sub">Auction Yearbook · 重要中国艺术品</div>
+        </div>
+
+        <!-- 操作按钮区 -->
+        <div class="action-bar">
+            <div>
+                <button class="btn-primary" id="openAddModalBtn" disabled>
+                    <span>＋</span> 录入新拍品
+                </button>
+                <span class="admin-only-note" id="adminHint">（仅管理员可用）</span>
+            </div>
+            <div>
+                <button class="btn-outline" id="resetDataBtn" title="重置为示例数据" style="display:none;">
+                    ↺ 重置示例数据
+                </button>
+            </div>
+        </div>
+
+        <!-- 搜索 & 分类 -->
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索拍品号、品名、朝代、公司…" autocomplete="off">
+                <button id="searchBtn">🔍 搜索</button>
+            </div>
+            <div class="category-filters" id="categoryFilters">
+                <button class="category-btn active" data-category="all">全部</button>
+                <button class="category-btn" data-category="瓷器">瓷器</button>
+                <button class="category-btn" data-category="玉器">玉器</button>
+                <button class="category-btn" data-category="书画">书画</button>
+                <button class="category-btn" data-category="杂项">杂项</button>
+                <button class="category-btn" data-category="珠宝翡翠">珠宝翡翠</button>
+            </div>
+        </div>
+
+        <!-- 排列筛选 -->
+        <div class="sort-bar">
+            <span class="sort-label">排列方式</span>
+            <select class="sort-select" id="sortField">
+                <option value="default">默认 (拍品号)</option>
+                <option value="price">成交价</option>
+                <option value="estimate">估价</option>
+                <option value="date">拍卖日期</option>
+                <option value="id">拍品号</option>
+            </select>
+            <div class="sort-toggle" id="sortToggle">
+                <button class="active" data-order="asc">↑ 升序</button>
+                <button data-order="desc">↓ 降序</button>
+            </div>
+        </div>
+
+        <div class="result-stats" id="resultStats">共 0 件拍品</div>
+
+        <div class="table-guide">
+            <span>拍品号</span>
+            <span>拍品照片</span>
+            <span>朝代/年代</span>
+            <span>品名</span>
+            <span>估价</span>
+            <span>成交价</span>
+            <span>尺寸</span>
+            <span>拍卖公司</span>
+            <span>拍卖日期</span>
+            <span>分类</span>
+            <span>操作</span>
+        </div>
+
+        <div class="lot-list" id="lotList"></div>
+
+        <div class="footer-note">
+            * 成交价可能含买家佣金，具体请以拍卖公司官方结果为准 / 部分拍品含佣金与否需核实。
+        </div>
+    </div>
+
+    <!-- 登录 / 注册 模态框 -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h2 id="authModalTitle">登录 / 注册</h2>
+                <button class="modal-close" id="closeAuthModalBtn" title="关闭">×</button>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab" data-tab="login">登录</button>
+                <button class="auth-tab" id="registerTab" data-tab="register">注册</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" autocomplete="on">
+                <div class="form-field full-width" style="margin-bottom:0.9rem;">
+                    <label>用户名</label>
+                    <input type="text" name="username" placeholder="请输入用户名" required autocomplete="username">
+                </div>
+                <div class="form-field full-width" style="margin-bottom:0.3rem;">
+                    <label>密码</label>
+                    <input type="password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+                </div>
+                <div class="auth-error" id="loginError"></div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit" style="width:100%;justify-content:center;">登录</button>
+                </div>
+                <div class="auth-hint">
+                    提示：管理员账号为 <strong>admin</strong>，密码 <strong>admin123</strong>
+                </div>
+            </form>
+
+            <!-- 注册表单 -->
+            <form id="registerForm" class="hidden" autocomplete="on">
+                <div class="form-field full-width" style="margin-bottom:0.9rem;">
+                    <label>用户名 <span class="required">*</span></label>
+                    <input type="text" name="username" placeholder="3-20 个字符" required autocomplete="username">
+                </div>
+                <div class="form-field full-width" style="margin-bottom:0.9rem;">
+                    <label>密码 <span class="required">*</span></label>
+                    <input type="password" name="password" placeholder="至少 6 位" required autocomplete="new-password">
+                </div>
+                <div class="form-field full-width" style="margin-bottom:0.3rem;">
+                    <label>确认密码 <span class="required">*</span></label>
+                    <input type="password" name="confirmPassword" placeholder="再次输入密码" required autocomplete="new-password">
+                </div>
+                <div class="auth-error" id="registerError"></div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit" style="width:100%;justify-content:center;">注册并登录</button>
+                </div>
+                <div class="auth-hint">
+                    注册用户仅可浏览与查询，管理员拥有录入与删除权限。
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 添加拍品模态框 -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>录入新拍品</h2>
+                <button class="modal-close" id="closeAddModalBtn" title="关闭">×</button>
+            </div>
+            <form id="addLotForm">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>拍品号 <span class="required">*</span></label>
+                        <input type="text" name="id" placeholder="如 LOT 116" required>
+                    </div>
+                    <div class="form-field">
+                        <label>朝代 / 年代</label>
+                        <input type="text" name="dynasty" placeholder="如 清乾隆">
+                    </div>
+                    <div class="form-field full-width">
+                        <label>品名 <span class="required">*</span></label>
+                        <input type="text" name="name" placeholder="如 青花缠枝莲纹赏瓶" required>
+                    </div>
+                    <div class="form-field">
+                        <label>估价</label>
+                        <input type="text" name="estimate" placeholder="如 HKD 800,000 – 1,200,000">
+                    </div>
+                    <div class="form-field">
+                        <label>成交价</label>
+                        <input type="text" name="price" placeholder="如 HKD 1,380,000">
+                    </div>
+                    <div class="form-field">
+                        <label>尺寸</label>
+                        <input type="text" name="size" placeholder="如 高 37.5 cm">
+                    </div>
+                    <div class="form-field">
+                        <label>拍卖公司</label>
+                        <input type="text" name="house" placeholder="如 佳士得">
+                    </div>
+                    <div class="form-field">
+                        <label>拍卖日期</label>
+                        <input type="date" name="date">
+                    </div>
+                    <div class="form-field">
+                        <label>分类 <span class="required">*</span></label>
+                        <select name="category" required>
+                            <option value="">请选择</option>
+                            <option value="瓷器">瓷器</option>
+                            <option value="玉器">玉器</option>
+                            <option value="书画">书画</option>
+                            <option value="杂项">杂项</option>
+                            <option value="珠宝翡翠">珠宝翡翠</option>
+                        </select>
+                    </div>
+                    <div class="upload-area">
+                        <div class="upload-preview" id="uploadPreview">暂无照片</div>
+                        <div class="upload-controls">
+                            <input type="file" id="photoInput" accept="image/*">
+                            <span class="upload-hint">支持 JPG / PNG / GIF，建议正方形，不超过 2MB</span>
+                            <button type="button" class="remove-photo-btn" id="removePhotoBtn" style="display:none;">✕ 移除照片</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelAddBtn">取消</button>
+                    <button type="submit" class="btn-submit">保存拍品</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // 0. 存储层：自动降级（localStorage -> 内存）
+            // ============================================================
+            const Storage = (function() {
+                let useLocalStorage = true;
+                try {
+                    const testKey = '__test_storage__';
+                    localStorage.setItem(testKey, '1');
+                    localStorage.removeItem(testKey);
+                } catch (e) {
+                    useLocalStorage = false;
+                    console.warn('localStorage 不可用，将使用内存存储。数据不会持久化。', e);
+                }
+
+                // 内存存储容器
+                const memory = {};
+
+                return {
+                    isPersistent: useLocalStorage,
+                    getItem(key) {
+                        if (useLocalStorage) {
+                            try { return localStorage.getItem(key); } catch (e) { return memory[key] || null; }
+                        }
+                        return memory[key] !== undefined ? memory[key] : null;
+                    },
+                    setItem(key, value) {
+                        if (useLocalStorage) {
+                            try { localStorage.setItem(key, value); return; } catch (e) { /* fallback */ }
+                        }
+                        memory[key] = String(value);
+                    },
+                    removeItem(key) {
+                        if (useLocalStorage) {
+                            try { localStorage.removeItem(key); return; } catch (e) { /* fallback */ }
+                        }
+                        delete memory[key];
+                    }
+                };
+            })();
+
+            // 如果存储不可持久化，显示警告
+            if (!Storage.isPersistent) {
+                const warningEl = document.getElementById('storageWarning');
+                if (warningEl) warningEl.classList.remove('hidden');
+            }
+
+            // ============================================================
+            // 1. 用户系统
+            // ============================================================
+            const USERS_KEY = 'auction_yearbook_users_v2';
+            const SESSION_KEY = 'auction_yearbook_session_v2';
+
+            function getUsers() {
+                try {
+                    const raw = Storage.getItem(USERS_KEY);
+                    if (!raw) return [];
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    console.warn('读取用户数据失败，重置为空数组。', e);
+                    return [];
+                }
+            }
+
+            function saveUsers(users) {
+                try {
+                    Storage.setItem(USERS_KEY, JSON.stringify(users));
+                } catch (e) {
+                    console.error('保存用户数据失败', e);
+                }
+            }
+
+            // 确保管理员账号存在
+            function ensureAdminUser() {
+                const users = getUsers();
+                const hasAdmin = users.some(u => u && u.username === 'admin');
+                if (!hasAdmin) {
+                    users.push({
+                        username: 'admin',
+                        password: 'admin123',
+                        role: 'admin',
+                        createdAt: new Date().toISOString()
+                    });
+                    saveUsers(users);
+                    console.log('已创建默认管理员账号：admin / admin123');
+                }
+            }
+
+            function getSession() {
+                try {
+                    const raw = Storage.getItem(SESSION_KEY);
+                    if (!raw) return null;
+                    const parsed = JSON.parse(raw);
+                    return (parsed && parsed.username) ? parsed : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function setSession(session) {
+                if (session) {
+                    Storage.setItem(SESSION_KEY, JSON.stringify(session));
+                } else {
+                    Storage.removeItem(SESSION_KEY);
+                }
+            }
+
+            let currentUser = getSession();
+
+            function isLoggedIn() { return currentUser !== null && currentUser !== undefined; }
+            function isAdmin() { return isLoggedIn() && currentUser.role === 'admin'; }
+
+            // ============================================================
+            // 2. 拍品数据
+            // ============================================================
+            const LOTS_KEY = 'auction_yearbook_lots_v2';
+
+            const defaultLots = [
+                { id: "LOT 101", photo: "📷 图1", photoUrl: null, dynasty: "清乾隆", name: "青花缠枝莲纹赏瓶", estimate: "HKD 800,000 – 1,200,000", price: "HKD 1,380,000", size: "高 37.5 cm", house: "佳士得", date: "2024-11-28", category: "瓷器" },
+                { id: "LOT 102", photo: "📷 图2", photoUrl: null, dynasty: "明永乐", name: "青花折枝花果纹梅瓶", estimate: "USD 1,500,000 – 2,500,000", price: "USD 3,120,000", size: "高 36.2 cm", house: "苏富比", date: "2024-09-15", category: "瓷器" },
+                { id: "LOT 103", photo: "📷 图3", photoUrl: null, dynasty: "南宋", name: "龙泉窑粉青釉鬲式炉", estimate: "HKD 400,000 – 600,000", price: "HKD 750,000", size: "直径 14.8 cm", house: "邦瀚斯", date: "2024-12-02", category: "瓷器" },
+                { id: "LOT 104", photo: "📷 图4", photoUrl: null, dynasty: "清康熙", name: "五彩人物故事图棒槌瓶", estimate: "GBP 60,000 – 80,000", price: "GBP 118,000", size: "高 45.0 cm", house: "伦敦佳士得", date: "2024-06-11", category: "瓷器" },
+                { id: "LOT 105", photo: "📷 图5", photoUrl: null, dynasty: "战国", name: "青玉龙纹佩", estimate: "HKD 120,000 – 180,000", price: "HKD 325,000", size: "长 11.2 cm", house: "中国嘉德", date: "2024-10-07", category: "玉器" },
+                { id: "LOT 106", photo: "📷 图6", photoUrl: null, dynasty: "清雍正", name: "粉彩过枝桃纹盘", estimate: "USD 200,000 – 300,000", price: "USD 520,000", size: "直径 20.1 cm", house: "纽约苏富比", date: "2024-03-22", category: "瓷器" },
+                { id: "LOT 107", photo: "📷 图7", photoUrl: null, dynasty: "元/明", name: "钧窑天蓝釉紫斑碗", estimate: "HKD 250,000 – 350,000", price: "HKD 410,000", size: "直径 18.5 cm", house: "保利香港", date: "2024-04-06", category: "瓷器" },
+                { id: "LOT 108", photo: "📷 图8", photoUrl: null, dynasty: "清乾隆", name: "御制铜鎏金无量寿佛", estimate: "EUR 150,000 – 200,000", price: "EUR 267,000", size: "高 21.3 cm", house: "巴黎苏富比", date: "2024-12-12", category: "杂项" },
+                { id: "LOT 109", photo: "📷 图9", photoUrl: null, dynasty: "明宣德", name: "青花轮花纹绶带耳扁瓶", estimate: "HKD 3,000,000 – 5,000,000", price: "HKD 6,240,000", size: "高 29.8 cm", house: "佳士得", date: "2024-05-30", category: "瓷器" },
+                { id: "LOT 110", photo: "📷 图10", photoUrl: null, dynasty: "清康熙", name: "素三彩暗刻龙纹碗", estimate: "USD 90,000 – 120,000", price: "USD 150,000", size: "直径 15.0 cm", house: "纽约佳士得", date: "2024-09-19", category: "瓷器" },
+                { id: "LOT 111", photo: "📷 图11", photoUrl: null, dynasty: "唐", name: "三彩骆驼及牵驼俑", estimate: "HKD 350,000 – 450,000", price: "HKD 680,000", size: "高 68.0 cm", house: "中国嘉德", date: "2024-11-16", category: "杂项" },
+                { id: "LOT 112", photo: "📷 图12", photoUrl: null, dynasty: "近现代", name: "张大千 泼彩山水", estimate: "HKD 2,000,000 – 3,000,000", price: "HKD 4,500,000", size: "68 × 134 cm", house: "苏富比", date: "2024-10-05", category: "书画" },
+                { id: "LOT 113", photo: "📷 图13", photoUrl: null, dynasty: "清", name: "翡翠雕螭龙纹瓶", estimate: "HKD 1,800,000 – 2,600,000", price: "HKD 3,100,000", size: "高 18.5 cm", house: "保利香港", date: "2024-11-08", category: "珠宝翡翠" },
+                { id: "LOT 114", photo: "📷 图14", photoUrl: null, dynasty: "汉", name: "白玉辟邪兽", estimate: "USD 80,000 – 120,000", price: "USD 190,000", size: "长 8.2 cm", house: "佳士得", date: "2024-03-14", category: "玉器" },
+                { id: "LOT 115", photo: "📷 图15", photoUrl: null, dynasty: "明", name: "竹雕松鹤纹笔筒", estimate: "HKD 60,000 – 90,000", price: "HKD 130,000", size: "高 14.5 cm", house: "邦瀚斯", date: "2024-05-22", category: "杂项" }
+            ];
+
+            function loadLots() {
+                try {
+                    const raw = Storage.getItem(LOTS_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    }
+                } catch (e) {
+                    console.warn('读取拍品数据失败，使用默认数据。', e);
+                }
+                return JSON.parse(JSON.stringify(defaultLots));
+            }
+
+            function saveLots(lots) {
+                try {
+                    Storage.setItem(LOTS_KEY, JSON.stringify(lots));
+                } catch (e) {
+                    console.warn('保存拍品数据失败（可能超出存储限制）', e);
+                }
+            }
+
+            let allLots = loadLots();
+
+            // ============================================================
+            // 3. DOM 引用
+            // ============================================================
+            const lotListEl = document.getElementById('lotList');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const categoryFilters = document.getElementById('categoryFilters');
+            const resultStats = document.getElementById('resultStats');
+            const sortField = document.getElementById('sortField');
+            const sortToggle = document.getElementById('sortToggle');
+
+            const openAddModalBtn = document.getElementById('openAddModalBtn');
+            const closeAddModalBtn = document.getElementById('closeAddModalBtn');
+            const cancelAddBtn = document.getElementById('cancelAddBtn');
+            const addModal = document.getElementById('addModal');
+            const addLotForm = document.getElementById('addLotForm');
+            const photoInput = document.getElementById('photoInput');
+            const uploadPreview = document.getElementById('uploadPreview');
+            const removePhotoBtn = document.getElementById('removePhotoBtn');
+            const resetDataBtn = document.getElementById('resetDataBtn');
+            const adminHint = document.getElementById('adminHint');
+
+            const userInfo = document.getElementById('userInfo');
+            const userBarActions = document.getElementById('userBarActions');
+
+            const authModal = document.getElementById('authModal');
+            const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            const loginBtn = document.getElementById('loginBtn');
+            const goToLoginBtn = document.getElementById('goToLoginBtn');
+            const loginRequiredOverlay = document.getElementById('loginRequiredOverlay');
+
+            // 状态
+            let activeCategory = 'all';
+            let searchKeyword = '';
+            let currentSort = 'default';
+            let currentOrder = 'asc';
+            let currentPhotoDataUrl = null;
+
+            // ============================================================
+            // 4. 工具函数
+            // ============================================================
+            function parsePrice(priceStr) {
+                if (!priceStr || priceStr === '—') return 0;
+                const match = String(priceStr).match(/[\d,]+/g);
+                if (match && match[0]) {
+                    return parseFloat(match[0].replace(/,/g, '')) || 0;
+                }
+                return 0;
+            }
+
+            function parseLotId(idStr) {
+                const match = String(idStr || '').match(/\d+/);
+                return match ? parseInt(match[0], 10) : 0;
+            }
+
+            function parseDate(dateStr) {
+                if (!dateStr || dateStr === '—') return 0;
+                const t = new Date(dateStr).getTime();
+                return isNaN(t) ? 0 : t;
+            }
+
+            function getSortValue(lot, field) {
+                switch (field) {
+                    case 'price': return parsePrice(lot.price);
+                    case 'estimate': return parsePrice(lot.estimate);
+                    case 'date': return parseDate(lot.date);
+                    case 'id': return parseLotId(lot.id);
+                    default: return parseLotId(lot.id);
+                }
+            }
+
+            function escapeHtml(str) {
+                if (str === null || str === undefined) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            // ============================================================
+            // 5. 渲染
+            // ============================================================
+            function renderLots() {
+                if (!isLoggedIn()) {
+                    lotListEl.innerHTML = `<div class="empty-state">🔒 请先登录后查看拍卖年鉴。</div>`;
+                    resultStats.textContent = '未登录';
+                    return;
+                }
+
+                let filtered = allLots.filter(lot => {
+                    if (activeCategory !== 'all' && lot.category !== activeCategory) return false;
+                    if (searchKeyword.trim() !== '') {
+                        const kw = searchKeyword.trim().toLowerCase();
+                        return (
+                            String(lot.id || '').toLowerCase().includes(kw) ||
+                            String(lot.dynasty || '').toLowerCase().includes(kw) ||
+                            String(lot.name || '').toLowerCase().includes(kw) ||
+                            String(lot.house || '').toLowerCase().includes(kw) ||
+                            String(lot.category || '').toLowerCase().includes(kw) ||
+                            String(lot.estimate || '').toLowerCase().includes(kw) ||
+                            String(lot.price || '').toLowerCase().includes(kw) ||
+                            String(lot.size || '').toLowerCase().includes(kw) ||
+                            String(lot.date || '').toLowerCase().includes(kw)
+                        );
+                    }
+                    return true;
+                });
+
+                filtered.sort((a, b) => {
+                    const field = currentSort === 'default' ? 'id' : currentSort;
+                    const valA = getSortValue(a, field);
+                    const valB = getSortValue(b, field);
+                    if (typeof valA === 'string') {
+                        return currentOrder === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                    }
+                    return currentOrder === 'asc' ? valA - valB : valB - valA;
+                });
+
+                let statsText = `共 ${filtered.length} 件拍品`;
+                if (activeCategory !== 'all') statsText += ` · 分类「${activeCategory}」`;
+                if (searchKeyword.trim()) statsText += ` · 搜索“${searchKeyword.trim()}”`;
+                if (currentSort !== 'default' || currentOrder !== 'asc') {
+                    const sortNames = { 'price': '成交价', 'estimate': '估价', 'date': '拍卖日期', 'id': '拍品号' };
+                    const fieldName = currentSort === 'default' ? '拍品号' : (sortNames[currentSort] || currentSort);
+                    const orderName = currentOrder === 'asc' ? '升序' : '降序';
+                    statsText += ` · 按${fieldName}${orderName}`;
+                }
+                resultStats.textContent = statsText;
+
+                if (filtered.length === 0) {
+                    lotListEl.innerHTML = `<div class="empty-state">🔍 没有找到匹配的拍品，请尝试其他关键词或分类。</div>`;
+                    return;
+                }
+
+                const admin = isAdmin();
+                let html = '';
+                filtered.forEach(lot => {
+                    let photoHtml = '';
+                    if (lot.photoUrl) {
+                        photoHtml = `<img src="${lot.photoUrl}" alt="${escapeHtml(lot.name)}">`;
+                    } else {
+                        photoHtml = escapeHtml(lot.photo || '📷');
+                    }
+
+                    const actionHtml = admin
+                        ? `<button class="delete-btn" data-id="${escapeHtml(lot.id)}" title="删除此拍品">✕</button>`
+                        : `<span style="color:#c9bcab;font-size:0.75rem;">—</span>`;
+
+                    html += `
+                        <div class="lot-card" data-category="${escapeHtml(lot.category)}" data-id="${escapeHtml(lot.id)}">
+                            <div class="lot-number">${escapeHtml(lot.id)}</div>
+                            <div class="lot-photo">
+                                <div class="photo-placeholder">${photoHtml}</div>
+                            </div>
+                            <div class="lot-dynasty">${escapeHtml(lot.dynasty) || '—'}</div>
+                            <div class="lot-name">${escapeHtml(lot.name)}</div>
+                            <div class="lot-estimate">${escapeHtml(lot.estimate) || '—'}</div>
+                            <div class="lot-price">${escapeHtml(lot.price) || '—'}</div>
+                            <div class="lot-size">${escapeHtml(lot.size) || '—'}</div>
+                            <div class="lot-house">${escapeHtml(lot.house) || '—'}</div>
+                            <div class="lot-date">${escapeHtml(lot.date) || '—'}</div>
+                            <div class="lot-category">${escapeHtml(lot.category)}</div>
+                            <div class="lot-actions">${actionHtml}</div>
+                        </div>
+                    `;
+                });
+                lotListEl.innerHTML = html;
+            }
+
+            // ============================================================
+            // 6. 用户界面更新
+            // ============================================================
+            function updateUserBar() {
+                if (isLoggedIn()) {
+                    const roleLabel = currentUser.role === 'admin' ? '管理员' : '普通用户';
+                    const roleClass = currentUser.role === 'admin' ? 'role-admin' : 'role-user';
+                    const initial = String(currentUser.username || '?').charAt(0).toUpperCase();
+
+                    userInfo.innerHTML = `
+                        <div class="user-avatar">${escapeHtml(initial)}</div>
+                        <span>${escapeHtml(currentUser.username)}</span>
+                        <span class="user-role-badge ${roleClass}">${roleLabel}</span>
+                    `;
+                    userBarActions.innerHTML = `<button class="btn-small" id="logoutBtn">退出登录</button>`;
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+                    openAddModalBtn.disabled = !isAdmin();
+                    openAddModalBtn.classList.toggle('disabled', !isAdmin());
+                    adminHint.style.display = isAdmin() ? 'none' : 'inline';
+                    resetDataBtn.style.display = isAdmin() ? 'inline-flex' : 'none';
+                } else {
+                    userInfo.innerHTML = `
+                        <div class="user-avatar">?</div>
+                        <span>未登录</span>
+                    `;
+                    userBarActions.innerHTML = `<button class="btn-small primary" id="loginBtn2">登录 / 注册</button>`;
+                    const loginBtn2 = document.getElementById('loginBtn2');
+                    if (loginBtn2) loginBtn2.addEventListener('click', openAuthModal);
+
+                    openAddModalBtn.disabled = true;
+                    openAddModalBtn.classList.add('disabled');
+                    adminHint.style.display = 'inline';
+                    resetDataBtn.style.display = 'none';
+                }
+            }
+
+            function updateLoginRequiredOverlay() {
+                if (isLoggedIn()) {
+                    loginRequiredOverlay.classList.add('hidden');
+                } else {
+                    loginRequiredOverlay.classList.remove('hidden');
+                }
+            }
+
+            // ============================================================
+            // 7. 登录 / 注册
+            // ============================================================
+            function openAuthModal() {
+                authModal.classList.add('open');
+                loginError.textContent = '';
+                registerError.textContent = '';
+                loginForm.reset();
+                registerForm.reset();
+                switchAuthTab('login');
+            }
+
+            function closeAuthModal() {
+                authModal.classList.remove('open');
+            }
+
+            function switchAuthTab(tab) {
+                if (tab === 'login') {
+                    loginTab.classList.add('active');
+                    registerTab.classList.remove('active');
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                } else {
+                    registerTab.classList.add('active');
+                    loginTab.classList.remove('active');
+                    registerForm.classList.remove('hidden');
+                    loginForm.classList.add('hidden');
+                }
+                loginError.textContent = '';
+                registerError.textContent = '';
+            }
+
+            function handleLogin(e) {
+                e.preventDefault();
+                const formData = new FormData(loginForm);
+                const username = String(formData.get('username') || '').trim();
+                const password = String(formData.get('password') || '');
+
+                if (!username || !password) {
+                    loginError.textContent = '请输入用户名和密码。';
+                    return;
+                }
+
+                const users = getUsers();
+                const user = users.find(u => u && u.username === username && u.password === password);
+
+                if (!user) {
+                    loginError.textContent = '用户名或密码错误。';
+                    return;
+                }
+
+                currentUser = { username: user.username, role: user.role || 'user' };
+                setSession(currentUser);
+
+                closeAuthModal();
+                updateUserBar();
+                updateLoginRequiredOverlay();
+                renderLots();
+            }
+
+            function handleRegister(e) {
+                e.preventDefault();
+                const formData = new FormData(registerForm);
+                const username = String(formData.get('username') || '').trim();
+                const password = String(formData.get('password') || '');
+                const confirm = String(formData.get('confirmPassword') || '');
+
+                if (!username || !password || !confirm) {
+                    registerError.textContent = '请填写所有字段。';
+                    return;
+                }
+                if (username.length < 3 || username.length > 20) {
+                    registerError.textContent = '用户名长度需为 3-20 个字符。';
+                    return;
+                }
+                if (password.length < 6) {
+                    registerError.textContent = '密码长度至少为 6 位。';
+                    return;
+                }
+                if (password !== confirm) {
+                    registerError.textContent = '两次输入的密码不一致。';
+                    return;
+                }
+                if (username.toLowerCase() === 'admin') {
+                    registerError.textContent = '该用户名为系统保留，请更换。';
+                    return;
+                }
+
+                const users = getUsers();
+                if (users.some(u => u && u.username === username)) {
+                    registerError.textContent = '该用户名已被注册。';
+                    return;
+                }
+
+                const newUser = {
+                    username,
+                    password,
+                    role: 'user',
+                    createdAt: new Date().toISOString()
+                };
+                users.push(newUser);
+                saveUsers(users);
+
+                currentUser = { username: newUser.username, role: newUser.role };
+                setSession(currentUser);
+
+                closeAuthModal();
+                updateUserBar();
+                updateLoginRequiredOverlay();
+                renderLots();
+
+                // 注册成功后提示
+                setTimeout(() => {
+                    alert(`注册成功！欢迎 ${username}，您现在可以浏览拍卖年鉴了。`);
+                }, 100);
+            }
+
+            function handleLogout() {
+                if (confirm('确定要退出登录吗？')) {
+                    currentUser = null;
+                    setSession(null);
+                    updateUserBar();
+                    updateLoginRequiredOverlay();
+                    renderLots();
+                }
+            }
+
+            // ============================================================
+            // 8. 事件绑定
+            // ============================================================
+            // 登录 / 注册
+            loginBtn.addEventListener('click', openAuthModal);
+            goToLoginBtn.addEventListener('click', openAuthModal);
+            closeAuthModalBtn.addEventListener('click', closeAuthModal);
+            authModal.addEventListener('click', function(e) {
+                if (e.target === authModal) closeAuthModal();
+            });
+            loginTab.addEventListener('click', () => switchAuthTab('login'));
+            registerTab.addEventListener('click', () => switchAuthTab('register'));
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+
+            // 添加拍品
+            openAddModalBtn.addEventListener('click', function() {
+                if (!isAdmin()) {
+                    alert('只有管理员才能录入拍品。');
+                    return;
+                }
+                addModal.classList.add('open');
+                addLotForm.reset();
+                currentPhotoDataUrl = null;
+                uploadPreview.innerHTML = '暂无照片';
+                removePhotoBtn.style.display = 'none';
+                photoInput.value = '';
+            });
+            closeAddModalBtn.addEventListener('click', () => addModal.classList.remove('open'));
+            cancelAddBtn.addEventListener('click', () => addModal.classList.remove('open'));
+            addModal.addEventListener('click', function(e) {
+                if (e.target === addModal) addModal.classList.remove('open');
+            });
+
+            // 照片上传
+            photoInput.addEventListener('change', function(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('图片大小不能超过 2MB，请重新选择。');
+                    photoInput.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    currentPhotoDataUrl = ev.target.result;
+                    uploadPreview.innerHTML = `<img src="${currentPhotoDataUrl}" alt="预览">`;
+                    removePhotoBtn.style.display = 'inline-block';
+                };
+                reader.onerror = function() {
+                    alert('读取图片失败，请重试。');
+                };
+                reader.readAsDataURL(file);
+            });
+
+            removePhotoBtn.addEventListener('click', function() {
+                currentPhotoDataUrl = null;
+                uploadPreview.innerHTML = '暂无照片';
+                removePhotoBtn.style.display = 'none';
+                photoInput.value = '';
+            });
+
+            // 提交新拍品
+            addLotForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!isAdmin()) {
+                    alert('只有管理员才能录入拍品。');
+                    return;
+                }
+
+                const formData = new FormData(addLotForm);
+                const newLot = {
+                    id: String(formData.get('id') || '').trim(),
+                    dynasty: String(formData.get('dynasty') || '').trim() || '—',
+                    name: String(formData.get('name') || '').trim(),
+                    estimate: String(formData.get('estimate') || '').trim() || '—',
+                    price: String(formData.get('price') || '').trim() || '—',
+                    size: String(formData.get('size') || '').trim() || '—',
+                    house: String(formData.get('house') || '').trim() || '—',
+                    date: String(formData.get('date') || '') || '—',
+                    category: String(formData.get('category') || ''),
+                    photo: '📷 新',
+                    photoUrl: currentPhotoDataUrl
+                };
+
+                if (!newLot.id || !newLot.name || !newLot.category) {
+                    alert('请填写必填项：拍品号、品名、分类。');
+                    return;
+                }
+
+                if (allLots.some(lot => lot.id === newLot.id)) {
+                    alert(`拍品号「${newLot.id}」已存在，请修改。`);
+                    return;
+                }
+
+                allLots.push(newLot);
+                saveLots(allLots);
+                renderLots();
+                addModal.classList.remove('open');
+                alert(`拍品「${newLot.id}」已成功录入！`);
+            });
+
+            // 删除拍品
+            lotListEl.addEventListener('click', function(e) {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (!deleteBtn) return;
+                if (!isAdmin()) {
+                    alert('只有管理员才能删除拍品。');
+                    return;
+                }
+                const id = deleteBtn.dataset.id;
+                if (confirm(`确定要删除拍品「${id}」吗？`)) {
+                    allLots = allLots.filter(lot => lot.id !== id);
+                    saveLots(allLots);
+                    renderLots();
+                }
+            });
+
+            // 重置数据
+            resetDataBtn.addEventListener('click', function() {
+                if (!isAdmin()) {
+                    alert('只有管理员才能重置数据。');
+                    return;
+                }
+                if (confirm('确定要重置为示例数据吗？所有已录入的拍品将会丢失。')) {
+                    allLots = JSON.parse(JSON.stringify(defaultLots));
+                    saveLots(allLots);
+                    renderLots();
+                }
+            });
+
+            // 搜索
+            searchBtn.addEventListener('click', function() {
+                searchKeyword = searchInput.value;
+                renderLots();
+            });
+            searchInput.addEventListener('input', function(e) {
+                searchKeyword = e.target.value;
+                renderLots();
+            });
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchKeyword = searchInput.value;
+                    renderLots();
+                }
+            });
+
+            // 分类
+            categoryFilters.addEventListener('click', function(e) {
+                const btn = e.target.closest('.category-btn');
+                if (!btn) return;
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeCategory = btn.dataset.category;
+                renderLots();
+            });
+
+            // 排序
+            sortField.addEventListener('change', function(e) {
+                currentSort = e.target.value;
+                renderLots();
+            });
+            sortToggle.addEventListener('click', function(e) {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const order = btn.dataset.order;
+                if (!order) return;
+                document.querySelectorAll('#sortToggle button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentOrder = order;
+                renderLots();
+            });
+
+            // ============================================================
+            // 9. 初始化
+            // ============================================================
+            ensureAdminUser();
+            updateUserBar();
+            updateLoginRequiredOverlay();
+            renderLots();
+
+            // 未登录时自动弹出登录框
+            if (!isLoggedIn()) {
+                setTimeout(() => {
+                    if (!isLoggedIn()) {
+                        openAuthModal();
+                    }
+                }, 300);
+            }
+
+            // 页面上暴露一个简易调试接口（可选用）
+            window.__auctionYearbook = {
+                getUsers: () => getUsers(),
+                resetUsers: () => { Storage.removeItem(USERS_KEY); ensureAdminUser(); },
+                getLots: () => allLots,
+                currentUser: () => currentUser
+            };
+        })();
+    </script>
+</body>
+</html>
